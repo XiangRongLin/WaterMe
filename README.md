@@ -69,9 +69,11 @@ All data lives in **your browser's `localStorage`** under the key `waterme_plant
 ## File structure
 
 ```
-index.html   — app shell, modal markup, bulk-add overlay
-style.css    — all styling (card grid, modal, sort bar, bulk-add, overdue highlight)
-app.js       — all logic (localStorage CRUD, rendering, image resize, sort, bulk add)
+index.html    — app shell, modal markup, bulk-add overlay
+style.css     — all styling (card grid, modal, sort bar, bulk-add, overdue highlight)
+app.js        — all logic (localStorage CRUD, rendering, image resize, sort, bulk add)
+favicon.svg   — app icon (used as browser favicon, Android home screen icon, iOS touch icon)
+manifest.json — web app manifest enabling "Add to Home Screen" as a standalone app
 ```
 
 No dependencies, no build tooling, no `node_modules`.

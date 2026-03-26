@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- App icon rounded background -->
+  <rect width="512" height="512" rx="108" fill="#4a7c59"/>
+  <!-- Water drop -->
+  <path d="M256 76 C254 76 128 238 128 318 C128 393 186 452 256 452 C326 452 384 393 384 318 C384 238 258 76 256 76Z" fill="#c8eaf5"/>
+  <!-- Leaf inside the drop -->
+  <path d="M256 292 C256 292 224 235 304 198 C324 246 298 296 256 292Z" fill="#4a7c59"/>
+  <!-- Leaf vein -->
+  <path d="M256 292 C272 262 294 226 298 205" stroke="#3a6347" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>

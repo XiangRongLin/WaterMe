@@ -1,0 +1,17 @@
+{
+  "name": "WaterMe",
+  "short_name": "WaterMe",
+  "description": "Track when you last watered your plants",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#4a7c59",
+  "theme_color": "#4a7c59",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
