@@ -1,0 +1,327 @@
+/* ── Reset & Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #f7f6f3;
+  --surface:      #ffffff;
+  --border:       #e2dfd8;
+  --text:         #2c2c2c;
+  --text-muted:   #888;
+  --green:        #4a7c59;
+  --green-light:  #eaf2ec;
+  --amber:        #d97706;
+  --amber-light:  #fffbeb;
+  --amber-border: #fbbf24;
+  --red:          #dc2626;
+  --radius:       12px;
+  --shadow:       0 2px 8px rgba(0,0,0,.06);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ── Main ───────────────────────────────────────────────────── */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+#empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: 4rem;
+  font-size: 1rem;
+}
+
+/* ── Plant Grid ─────────────────────────────────────────────── */
+#plant-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Plant Card ─────────────────────────────────────────────── */
+.plant-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .15s;
+}
+.plant-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+
+.plant-card.overdue {
+  border-color: var(--amber-border);
+  background: var(--amber-light);
+}
+
+/* Photo area */
+.card-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--green-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  color: var(--green);
+  flex-shrink: 0;
+}
+.card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card body */
+.card-body {
+  padding: .9rem 1rem .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  flex: 1;
+}
+
+.card-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.card-meta {
+  font-size: .85rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.badge-overdue {
+  display: inline-block;
+  background: var(--amber);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .15rem .5rem;
+  border-radius: 99px;
+  align-self: flex-start;
+}
+
+/* Card actions */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  padding: 0 1rem 1rem;
+}
+
+.btn-watered {
+  width: 100%;
+}
+
+.card-secondary-actions {
+  display: flex;
+  gap: .5rem;
+}
+
+.btn-edit,
+.btn-delete {
+  flex: 1;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background .12s, border-color .12s, opacity .12s;
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .5; cursor: default; }
+
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+.btn-primary:hover:not(:disabled) { background: #3a6347; border-color: #3a6347; }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--bg); }
+
+.btn-danger {
+  background: var(--surface);
+  color: var(--red);
+  border-color: #fca5a5;
+}
+.btn-danger:hover:not(:disabled) { background: #fef2f2; }
+
+.btn-text {
+  background: none;
+  border-color: transparent;
+  color: var(--text-muted);
+  padding: .25rem .5rem;
+  font-size: .8rem;
+  text-decoration: underline;
+}
+.btn-text:hover { color: var(--text); }
+
+/* ── Modal ──────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 100;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  padding: 2rem 1.75rem;
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.modal h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--green);
+}
+
+/* ── Form ───────────────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.required { color: var(--red); }
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"] {
+  padding: .55rem .75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .9rem;
+  background: var(--bg);
+  color: var(--text);
+  width: 100%;
+  transition: border-color .12s;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+.form-group input.error { border-color: var(--red); }
+
+.interval-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.interval-row input { width: 90px; flex-shrink: 0; }
+.interval-row span { color: var(--text-muted); font-size: .9rem; }
+
+/* Photo upload */
+.photo-upload-area {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .12s, background .12s;
+}
+.photo-upload-area:hover { border-color: var(--green); background: var(--green-light); }
+.photo-upload-area.dragover { border-color: var(--green); background: var(--green-light); }
+
+.photo-upload-area input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+#photo-placeholder {
+  color: var(--text-muted);
+  font-size: .85rem;
+  text-align: center;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+#photo-preview {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: flex-end;
+  margin-top: .5rem;
+}
+.form-actions .btn { min-width: 90px; }
