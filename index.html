@@ -14,6 +14,15 @@
   </header>
 
   <main>
+    <div id="sort-bar" hidden>
+      <label for="sort-select">Sort by</label>
+      <select id="sort-select">
+        <option value="name-asc">Name (A → Z)</option>
+        <option value="name-desc">Name (Z → A)</option>
+        <option value="watered-asc">Last watered (oldest first)</option>
+        <option value="watered-desc">Last watered (newest first)</option>
+      </select>
+    </div>
     <div id="plant-list"></div>
     <p id="empty-state" hidden>No plants yet — add your first one!</p>
   </main>
@@ -36,7 +45,7 @@
           <div class="photo-upload-area" id="photo-upload-area">
             <img id="photo-preview" src="" alt="Preview" hidden />
             <span id="photo-placeholder">Click or drag to upload an image</span>
-            <input type="file" id="input-photo" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" />
+            <input type="file" id="input-photo" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" multiple />
           </div>
           <button type="button" id="btn-remove-photo" class="btn btn-text" hidden>Remove photo</button>
         </div>
@@ -64,6 +73,19 @@
 
   <!-- Hidden canvas for image resizing -->
   <canvas id="resize-canvas" hidden></canvas>
+
+  <!-- Bulk Add Overlay -->
+  <div id="bulk-overlay" class="modal-overlay" hidden>
+    <div class="modal bulk-modal">
+      <h2>Add Plants</h2>
+      <p class="bulk-hint">Fill in the details for each plant, then save all at once.</p>
+      <div id="bulk-entries"></div>
+      <div class="form-actions">
+        <button type="button" id="btn-bulk-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="btn-bulk-save" class="btn btn-primary">Save all</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

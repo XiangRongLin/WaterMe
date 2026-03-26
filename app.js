@@ -5,6 +5,8 @@ const MAX_IMG_HEIGHT = 800;
 
 let plants = [];
 let editingId = null; // null = adding new plant
+let sortOrder = localStorage.getItem('waterme_sort') || 'name-asc';
+let bulkData = []; // [{ dataUrl, nameEl, dateEl, intervalEl }]
 
 /* ── Persistence ────────────────────────────────────────────── */
 function loadPlants() {
@@ -65,19 +67,46 @@ function resizeImageFile(file) {
 }
 
 /* ── Rendering ──────────────────────────────────────────────── */
+function sortedPlants() {
+  const copy = [...plants];
+  if (sortOrder === 'name-asc') {
+    copy.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortOrder === 'name-desc') {
+    copy.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (sortOrder === 'watered-asc') {
+    copy.sort((a, b) => {
+      if (!a.lastWatered && !b.lastWatered) return 0;
+      if (!a.lastWatered) return -1;
+      if (!b.lastWatered) return 1;
+      return a.lastWatered.localeCompare(b.lastWatered);
+    });
+  } else {
+    copy.sort((a, b) => {
+      if (!a.lastWatered && !b.lastWatered) return 0;
+      if (!a.lastWatered) return 1;
+      if (!b.lastWatered) return -1;
+      return b.lastWatered.localeCompare(a.lastWatered);
+    });
+  }
+  return copy;
+}
+
 function renderAll() {
   const list = document.getElementById('plant-list');
   const emptyState = document.getElementById('empty-state');
+  const sortBar = document.getElementById('sort-bar');
 
   list.innerHTML = '';
 
   if (plants.length === 0) {
     emptyState.hidden = false;
+    sortBar.hidden = true;
     return;
   }
   emptyState.hidden = true;
+  sortBar.hidden = false;
 
-  plants.forEach(plant => {
+  sortedPlants().forEach(plant => {
     list.appendChild(buildCard(plant));
   });
 }
@@ -304,22 +333,29 @@ overlay.addEventListener('click', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !overlay.hidden) closeModal();
+  if (e.key !== 'Escape') return;
+  if (!overlay.hidden) closeModal();
+  if (!document.getElementById('bulk-overlay').hidden) closeBulkModal();
 });
 
 inputPhoto.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const files = Array.from(e.target.files);
+  inputPhoto.value = '';
+  if (files.length === 0) return;
+
+  if (files.length > 1) {
+    openBulkModal(files);
+    return;
+  }
+
   try {
-    const dataUrl = await resizeImageFile(file);
+    const dataUrl = await resizeImageFile(files[0]);
     pendingPhoto = dataUrl;
     setPhotoPreview(dataUrl);
   } catch (err) {
     console.error(err);
     alert('Could not load the image. Please try a different file.');
   }
-  // Reset so the same file can be re-selected if needed
-  inputPhoto.value = '';
 });
 
 btnRemovePhoto.addEventListener('click', () => {
@@ -390,6 +426,138 @@ inputName.addEventListener('input', () => {
   inputName.classList.remove('error');
 });
 
+/* ── Bulk Add ───────────────────────────────────────────────── */
+function buildBulkEntry(dataUrl) {
+  const entry = document.createElement('div');
+  entry.className = 'bulk-entry';
+
+  const thumb = document.createElement('img');
+  thumb.className = 'bulk-thumb';
+  thumb.src = dataUrl;
+  thumb.alt = '';
+
+  const fields = document.createElement('div');
+  fields.className = 'bulk-entry-fields';
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Plant name *';
+  nameInput.setAttribute('aria-label', 'Plant name');
+
+  const dateLabel = document.createElement('span');
+  dateLabel.className = 'bulk-entry-label';
+  dateLabel.textContent = 'Last watered';
+
+  const dateInput = document.createElement('input');
+  dateInput.type = 'date';
+  dateInput.value = todayStr();
+  dateInput.setAttribute('aria-label', 'Last watered');
+
+  const intervalRow = document.createElement('div');
+  intervalRow.className = 'interval-row';
+  const intervalInput = document.createElement('input');
+  intervalInput.type = 'number';
+  intervalInput.min = '1';
+  intervalInput.max = '365';
+  intervalInput.placeholder = 'Every N days';
+  intervalInput.setAttribute('aria-label', 'Water every N days');
+  const daySpan = document.createElement('span');
+  daySpan.textContent = 'days';
+  intervalRow.appendChild(intervalInput);
+  intervalRow.appendChild(daySpan);
+
+  fields.appendChild(nameInput);
+  fields.appendChild(dateLabel);
+  fields.appendChild(dateInput);
+  fields.appendChild(intervalRow);
+  entry.appendChild(thumb);
+  entry.appendChild(fields);
+
+  bulkData.push({ dataUrl, nameEl: nameInput, dateEl: dateInput, intervalEl: intervalInput });
+  nameInput.addEventListener('input', () => nameInput.classList.remove('error'));
+
+  return entry;
+}
+
+async function openBulkModal(files) {
+  const bulkOverlay = document.getElementById('bulk-overlay');
+  const bulkEntriesContainer = document.getElementById('bulk-entries');
+  const saveBtn = document.getElementById('btn-bulk-save');
+
+  closeModal();
+  bulkData = [];
+  bulkEntriesContainer.innerHTML = '';
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Loading…';
+  bulkOverlay.hidden = false;
+
+  let hasError = false;
+  for (const file of files) {
+    try {
+      const dataUrl = await resizeImageFile(file);
+      bulkEntriesContainer.appendChild(buildBulkEntry(dataUrl));
+    } catch {
+      hasError = true;
+    }
+  }
+
+  if (hasError) alert('Some images could not be loaded and were skipped.');
+
+  if (bulkData.length === 0) {
+    closeBulkModal();
+    return;
+  }
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = `Save ${bulkData.length} plant${bulkData.length !== 1 ? 's' : ''}`;
+  bulkData[0].nameEl.focus();
+}
+
+function closeBulkModal() {
+  document.getElementById('bulk-overlay').hidden = true;
+  document.getElementById('bulk-entries').innerHTML = '';
+  bulkData = [];
+}
+
+function saveBulkPlants() {
+  let firstError = null;
+  for (const entry of bulkData) {
+    if (!entry.nameEl.value.trim()) {
+      entry.nameEl.classList.add('error');
+      if (!firstError) firstError = entry.nameEl;
+    }
+  }
+  if (firstError) { firstError.focus(); return; }
+
+  for (const entry of bulkData) {
+    const iv = entry.intervalEl.value;
+    plants.push({
+      id: crypto.randomUUID(),
+      name: entry.nameEl.value.trim(),
+      photo: entry.dataUrl,
+      lastWatered: entry.dateEl.value || todayStr(),
+      intervalDays: iv && parseInt(iv, 10) > 0 ? parseInt(iv, 10) : null,
+    });
+  }
+
+  savePlants();
+  renderAll();
+  closeBulkModal();
+}
+
+document.getElementById('btn-bulk-cancel').addEventListener('click', closeBulkModal);
+document.getElementById('btn-bulk-save').addEventListener('click', saveBulkPlants);
+document.getElementById('bulk-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('bulk-overlay')) closeBulkModal();
+});
+
+document.getElementById('sort-select').addEventListener('change', (e) => {
+  sortOrder = e.target.value;
+  localStorage.setItem('waterme_sort', sortOrder);
+  renderAll();
+});
+
 /* ── Init ───────────────────────────────────────────────────── */
+document.getElementById('sort-select').value = sortOrder;
 loadPlants();
 renderAll();

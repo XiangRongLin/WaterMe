@@ -325,3 +325,92 @@ main {
   margin-top: .5rem;
 }
 .form-actions .btn { min-width: 90px; }
+
+/* ── Sort Bar ───────────────────────────────────────────────── */
+#sort-bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.25rem;
+}
+#sort-bar label { font-size: .85rem; color: var(--text-muted); }
+#sort-select {
+  font-size: .85rem;
+  padding: .35rem .6rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+#sort-select:focus { outline: none; border-color: var(--green); }
+
+/* ── Bulk Add ───────────────────────────────────────────────── */
+.bulk-modal { max-width: 560px; }
+
+.bulk-hint {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  margin-top: -.75rem;
+}
+
+#bulk-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.bulk-entry {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: .9rem;
+}
+
+.bulk-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.bulk-entry-fields {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.bulk-entry-fields input[type="text"],
+.bulk-entry-fields input[type="date"],
+.bulk-entry-fields input[type="number"] {
+  padding: .45rem .65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .875rem;
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+}
+
+.bulk-entry-fields input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.bulk-entry-fields input.error { border-color: var(--red); }
+
+.bulk-entry-fields .interval-row input { flex: 1; width: auto; }
+
+.bulk-entry-label {
+  font-size: .75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
